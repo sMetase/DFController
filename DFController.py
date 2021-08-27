@@ -1,16 +1,16 @@
 # Dynamical Fan Controller Script
 # Created by sMetase
-# 8/27/2021
+# 2021/8/27
 
 # Define the channel used by GPIO
 Gpchannel = 40
 # Set up the fan's turn-on temperature
 Temp_threshold = 50.0
-#Fan status
+# Fan status
 Fanopen = False
-#Interval
+# Interval
 Interval = (0, 5, 0)
-#Log
+# Logfilename
 filename = "log.txt"
 
 # Import necessary lib
@@ -36,11 +36,11 @@ def gpio_setup():
 
 
 def log(temp,c):
-    "Log"
+    "Log and output"
     with open(filename, 'a') as log:
-        log.write(time.ctime() + " " + str(temp) + "C" + " " + c + "\n")
+        log.write("["+time.ctime()+"]" + "   %.2fC"%temp + " " + c + "\n")
         log.close()
-
+    print("["+time.ctime()+"]" + "   %.2fC"%temp + " " + c + "\n")
 
 def clean():
     "Free resources"
@@ -51,20 +51,20 @@ def clean():
 def main():
     "Dynamically switch the fan"
     gpio_setup()
-    while(True):
-        temp = cpu_temp()
+    # while(True):
+    temp = cpu_temp()
 
-        if temp > Temp_threshold:
-            log(temp,"Open the fan")
-            GPIO.output(Gpchannel, GPIO.HIGH)
-            Fanopen = True
-        else:
-            log(temp, "Close the fan")
-            GPIO.output(Gpchannel, GPIO.LOW)
-            Fanopen = False
+    if temp > Temp_threshold:
+        log(temp,"Open the fan")
+        GPIO.output(Gpchannel, GPIO.HIGH)
+        Fanopen = True
+    else:
+        log(temp, "Close the fan")
+        GPIO.output(Gpchannel, GPIO.LOW)
+        Fanopen = False
         
-        time.sleep(Interval[0]*3600+Interval[1]*60+Interval[2])
+    # time.sleep(Interval[0]*3600+Interval[1]*60+Interval[2])
         
 
 main()
-atexit(clean())
+atexit.register(clean)
